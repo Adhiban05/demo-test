@@ -1,0 +1,9 @@
+DECLARE
+ CURSOR c1 IS SELECT * FROM employee;
+ r employee%ROWTYPE;
+BEGIN
+ FOR r IN c1 LOOP
+  DBMS_OUTPUT.PUT_LINE(r.eid||' '||r.ename||' '||r.salary);
+ END LOOP;
+END;
+/
