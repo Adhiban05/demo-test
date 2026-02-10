@@ -1,9 +1,64 @@
-DECLARE
- CURSOR c1 IS SELECT * FROM employee;
- r employee%ROWTYPE;
-BEGIN
- FOR r IN c1 LOOP
-  DBMS_OUTPUT.PUT_LINE(r.eid||' '||r.ename||' '||r.salary);
- END LOOP;
-END;
-/
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+public class test extends JFrame {
+    BufferedImage img;
+    double scale = 1.0;
+    double angle = 0;
+    JPanel imagePanel = new JPanel() {
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (img == null) return;
+
+            Graphics2D g2 = (Graphics2D) g;
+            g2.translate(getWidth() / 2, getHeight() / 2);
+            g2.rotate(angle);
+            g2.scale(scale, scale);
+            g2.translate(-img.getWidth() / 2, -img.getHeight() / 2);
+            g2.drawImage(img, 0, 0, null);
+        }
+    };
+    test() {
+        JButton open = new JButton("Open");
+        JButton zoomIn = new JButton("Zoom +");
+        JButton zoomOut = new JButton("Zoom -");
+        JButton rotate = new JButton("Rotate");
+
+        open.addActionListener(e -> openImage());
+        zoomIn.addActionListener(e -> { scale += 0.1; repaint(); });
+        zoomOut.addActionListener(e -> { scale -= 0.1; repaint(); });
+        rotate.addActionListener(e -> { angle += Math.PI / 12; repaint(); });
+
+        JPanel top = new JPanel();
+        top.add(open);
+        top.add(zoomIn);
+        top.add(zoomOut);
+        top.add(rotate);
+
+        add(top, BorderLayout.NORTH);
+        add(imagePanel);
+
+        setSize(600, 500);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
+    }
+
+    void openImage() {
+        JFileChooser fc = new JFileChooser();
+        if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                img = ImageIO.read(fc.getSelectedFile());
+                scale = 1.0;
+                angle = 0;
+                repaint();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        new test();   // ✅ matches class name
+    }
+}
